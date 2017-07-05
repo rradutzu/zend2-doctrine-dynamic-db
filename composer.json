@@ -1,11 +1,11 @@
 {
     "name": "rradutzu/zend2-doctrine-dynamic-db",
-    "description": "Zend2 Doctrine Module that allows defining connections using dynamic database names",
-    "version": "0.0.4",
+    "description": "Zend2/3 Doctrine Module that allows defining connections using dynamic database names",
+    "version": "1.0.0",
     "license": "GPL-2.0",
     "require": {
         "composer/installers": "~1.0",
-	"doctrine/doctrine-orm-module": ">0.5"
+	    "doctrine/doctrine-orm-module": ">0.5"
     },
     "autoload": {
         "psr-0": {

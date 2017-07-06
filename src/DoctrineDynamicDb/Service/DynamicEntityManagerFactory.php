@@ -8,6 +8,7 @@ use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use DoctrineDynamicDb\Client\ClientInterface;
 
 /**
  * Class DynamicEntityManagerFactory

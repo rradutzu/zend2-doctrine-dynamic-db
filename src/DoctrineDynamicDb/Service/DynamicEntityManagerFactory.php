@@ -28,7 +28,7 @@ class DynamicEntityManagerFactory extends AbstractFactory
 
         $connectionName = $options->getConnection();
         $configurationName = $options->getConfiguration();
-        $globalConfig = $container->get('config');
+        $globalConfig = $container->get('Configuration');
 
         if (empty($globalConfig['doctrine']['connection'][$this->name]['params']['dbNameFactory'])) {
             throw new ServiceNotCreatedException('Option dbNameFactory not found or empty');
@@ -58,6 +58,9 @@ class DynamicEntityManagerFactory extends AbstractFactory
         $isAllowOverride = $container->getAllowOverride();
         $container->setAllowOverride(true);
         $container->setService('config', $globalConfig);
+        $container->setService('Configuration', $globalConfig);
+        $container->setService('configuration', $globalConfig);
+        $container->setService('Config', $globalConfig);
         $container->setAllowOverride($isAllowOverride);
 
         $connection = $container->get($connectionName);

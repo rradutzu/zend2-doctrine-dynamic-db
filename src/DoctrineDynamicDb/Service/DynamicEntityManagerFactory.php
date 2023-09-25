@@ -6,9 +6,10 @@ use Doctrine\ORM\EntityManager;
 use DoctrineModule\Service\AbstractFactory;
 use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use DoctrineDynamicDb\Client\ClientInterface;
+use Psr\Container\ContainerExceptionInterface;
 
 /**
  * Class DynamicEntityManagerFactory
@@ -21,7 +22,7 @@ class DynamicEntityManagerFactory extends AbstractFactory
      *
      * @return EntityManager
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): EntityManager
     {
         /* @var $options \DoctrineORMModule\Options\EntityManager */
         $options = $this->getOptions($container, 'entitymanager');
@@ -70,15 +71,15 @@ class DynamicEntityManagerFactory extends AbstractFactory
         // @todo should actually attach it to a fetched event manager here, and not
         //       rely on its factory code
         $container->get($options->getEntityResolver());
-
-        return EntityManager::create($connection, $config);
+        return new EntityManager($connection, $config);
     }
 
     /**
      * {@inheritDoc}
      * @return EntityManager
+     * @throws ContainerExceptionInterface
      */
-    public function createService(ServiceLocatorInterface $container)
+    public function createService(ServiceLocatorInterface $container): EntityManager
     {
         return $this($container, EntityManager::class);
     }
@@ -86,7 +87,7 @@ class DynamicEntityManagerFactory extends AbstractFactory
     /**
      * {@inheritDoc}
      */
-    public function getOptionsClass()
+    public function getOptionsClass(): string
     {
         return DoctrineORMModuleEntityManager::class;
     }

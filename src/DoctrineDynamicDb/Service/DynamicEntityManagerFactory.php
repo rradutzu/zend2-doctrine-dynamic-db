@@ -2,6 +2,7 @@
 
 namespace DoctrineDynamicDb\Service;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use DoctrineDynamicDb\Strategy\ReplaceDynamicDbQuoteStrategy;
 use DoctrineModule\Service\AbstractFactory;
@@ -62,6 +63,7 @@ class DynamicEntityManagerFactory extends AbstractFactory
 
         $connectionName = $options->getConnection();
         $configurationName = $options->getConfiguration();
+        /** @var Connection $connection */
         $connection = $container->get($connectionName);
         $config = $container->get($configurationName);
         $config->setQuoteStrategy(new ReplaceDynamicDbQuoteStrategy($dbName));
@@ -69,7 +71,7 @@ class DynamicEntityManagerFactory extends AbstractFactory
         // initializing the resolver
         // $container->get($options->getEntityResolver());
 
-        return EntityManager::create($connection, $config);
+        return EntityManager::create(new \DoctrineDynamicDb\Service\Connection($connection, $dbName), $config);
     }
 
     /**

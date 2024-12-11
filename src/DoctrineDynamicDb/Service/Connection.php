@@ -2,14 +2,18 @@
 
 namespace DoctrineDynamicDb\Service;
 
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\Driver;
+
 class Connection extends \Doctrine\DBAL\Connection
 {
-    private string $newDbName;
+    private string $clientDatabase;
 
-    public function __construct(\Doctrine\DBAL\Connection $connection, string $newDbName)
+    public function __construct(array $params, Driver $driver, Configuration $config = null,
+                                EventManager $eventManager = null)
     {
-        $this->newDbName = $newDbName;
-        parent::__construct($connection->getParams(), $connection->getDriver(), $connection->getConfiguration(), $connection->getEventManager());
+        parent::__construct($params, $driver, $config, $eventManager);
     }
 
     /**
@@ -19,6 +23,23 @@ class Connection extends \Doctrine\DBAL\Connection
      */
     public function getDatabase()
     {
-        return $this->newDbName;
+        if (!empty($this->getClientDatabase())) {
+            return $this->getClientDatabase();
+        }
+        return parent::getDatabase();
     }
+
+    public function getClientDatabase(): string
+    {
+        return $this->clientDatabase;
+    }
+
+    public function setClientDatabase(string $clientDatabase): void
+    {
+        $this->clientDatabase = $clientDatabase;
+    }
+
+
+
+
 }

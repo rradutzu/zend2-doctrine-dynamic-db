@@ -68,10 +68,16 @@ class DynamicEntityManagerFactory extends AbstractFactory
         $config = $container->get($configurationName);
         $config->setQuoteStrategy(new ReplaceDynamicDbQuoteStrategy($dbName));
 
-        // initializing the resolver
-        // $container->get($options->getEntityResolver());
+        if ($connection instanceof \DoctrineDynamicDb\Service\Connection) {
+            $connection->setClientDatabase($dbName);
+        }
 
-        return EntityManager::create(new \DoctrineDynamicDb\Service\Connection($connection, $dbName), $config);
+        // initializing the resolver
+        // @todo should actually attach it to a fetched event manager here, and not
+        //       rely on its factory code
+        $container->get($options->getEntityResolver());
+
+        return EntityManager::create($connection, $config);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace DoctrineDynamicDb\Service;
 
 use Doctrine\ORM\EntityManager;
+use DoctrineDynamicDb\Strategy\ReplaceDynamicDbQuoteStrategy;
 use DoctrineModule\Service\AbstractFactory;
 use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Interop\Container\ContainerInterface;
@@ -16,6 +17,8 @@ use DoctrineDynamicDb\Client\ClientInterface;
  */
 class DynamicEntityManagerFactory extends AbstractFactory
 {
+    private $defaultEm = 'orm_default';
+
     /**
      * {@inheritDoc}
      *
@@ -26,10 +29,11 @@ class DynamicEntityManagerFactory extends AbstractFactory
         /* @var $options \DoctrineORMModule\Options\EntityManager */
         $options = $this->getOptions($container, 'entitymanager');
 
-        $connectionName = $options->getConnection();
-        $configurationName = $options->getConfiguration();
         $globalConfig = $container->get('Configuration');
 
+        if (empty($globalConfig['doctrine']['connection'][$this->defaultEm]['params'])) {
+            throw new ServiceNotCreatedException('Entity Manager ' . $this->defaultEm . ' must be configured first');
+        }
         if (empty($globalConfig['doctrine']['connection'][$this->name]['params']['dbNameFactory'])) {
             throw new ServiceNotCreatedException('Option dbNameFactory not found or empty');
         }
@@ -55,21 +59,15 @@ class DynamicEntityManagerFactory extends AbstractFactory
 
         // we need to reset the connection parameters here
         $globalConfig['doctrine']['connection'][$this->name]['params']['dbname'] = $dbName;
-        $isAllowOverride = $container->getAllowOverride();
-        $container->setAllowOverride(true);
-        $container->setService('config', $globalConfig);
-        $container->setService('Configuration', $globalConfig);
-        $container->setService('configuration', $globalConfig);
-        $container->setService('Config', $globalConfig);
-        $container->setAllowOverride($isAllowOverride);
 
+        $connectionName = $options->getConnection();
+        $configurationName = $options->getConfiguration();
         $connection = $container->get($connectionName);
         $config = $container->get($configurationName);
+        $config->setQuoteStrategy(new ReplaceDynamicDbQuoteStrategy($dbName));
 
         // initializing the resolver
-        // @todo should actually attach it to a fetched event manager here, and not
-        //       rely on its factory code
-        $container->get($options->getEntityResolver());
+        // $container->get($options->getEntityResolver());
 
         return EntityManager::create($connection, $config);
     }

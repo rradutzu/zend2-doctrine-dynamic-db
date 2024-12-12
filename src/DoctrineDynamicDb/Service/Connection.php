@@ -8,7 +8,7 @@ use Doctrine\DBAL\Driver;
 
 class Connection extends \Doctrine\DBAL\Connection
 {
-    private string $clientDatabase;
+    private string $clientDatabase = '';
 
     public function __construct(array $params, Driver $driver, Configuration $config = null,
                                 EventManager $eventManager = null)

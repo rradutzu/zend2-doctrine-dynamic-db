@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 
 class ReplaceDynamicDbQuoteStrategy extends DefaultQuoteStrategy
 {
-    private string $clientDbName;
+    private string $clientDbName = '';
 
     public function __construct(string $clientDbName) {
         $this->clientDbName = $clientDbName;
@@ -25,10 +25,14 @@ class ReplaceDynamicDbQuoteStrategy extends DefaultQuoteStrategy
             $class->table['schema'] = $this->clientDbName;
         }
 
-        $tableName = $class->table['schema'] . '.' . $class->table['name'];
+        if (!empty($class->table['schema'])) {
+            $tableName = $class->table['schema'] . '.' . $class->table['name'];
 
-        if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
-            $tableName = $class->table['schema'] . '__' . $class->table['name'];
+            if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
+                $tableName = $class->table['schema'] . '__' . $class->table['name'];
+            }
+        } else {
+            $tableName = $class->table['name'];
         }
 
         return isset($class->table['quoted'])

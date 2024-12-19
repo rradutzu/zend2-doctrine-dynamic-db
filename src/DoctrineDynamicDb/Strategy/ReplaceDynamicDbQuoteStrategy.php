@@ -9,9 +9,11 @@ use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 class ReplaceDynamicDbQuoteStrategy extends DefaultQuoteStrategy
 {
     private string $clientDbName = '';
+    private array $managedEntities;
 
-    public function __construct(string $clientDbName) {
+    public function __construct(string $clientDbName, array $managedEntities) {
         $this->clientDbName = $clientDbName;
+        $this->managedEntities = $managedEntities;
     }
 
     /**
@@ -21,7 +23,7 @@ class ReplaceDynamicDbQuoteStrategy extends DefaultQuoteStrategy
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
-        if (empty($class->table['schema'])) {
+        if (empty($class->table['schema']) && in_array($class->getName(), $this->managedEntities)) {
             $class->table['schema'] = $this->clientDbName;
         }
 

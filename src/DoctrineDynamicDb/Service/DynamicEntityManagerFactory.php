@@ -66,7 +66,9 @@ class DynamicEntityManagerFactory extends AbstractFactory
         /** @var Connection $connection */
         $connection = $container->get($connectionName);
         $config = $container->get($configurationName);
-        $config->setQuoteStrategy(new ReplaceDynamicDbQuoteStrategy($dbName));
+
+        $namespacesAllowed = $config->getMetadataDriverImpl()->getAllClassNames();
+        $config->setQuoteStrategy(new ReplaceDynamicDbQuoteStrategy($dbName, $namespacesAllowed));
 
         if ($connection instanceof \DoctrineDynamicDb\Service\Connection) {
             $connection->setClientDatabase($dbName);

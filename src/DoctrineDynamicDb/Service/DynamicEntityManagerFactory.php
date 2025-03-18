@@ -6,9 +6,10 @@ use Doctrine\ORM\EntityManager;
 use DoctrineModule\Service\AbstractFactory;
 use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use DoctrineDynamicDb\Client\ClientInterface;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Class DynamicEntityManagerFactory
@@ -55,13 +56,16 @@ class DynamicEntityManagerFactory extends AbstractFactory
 
         // we need to reset the connection parameters here
         $globalConfig['doctrine']['connection'][$this->name]['params']['dbname'] = $dbName;
-        $isAllowOverride = $container->getAllowOverride();
-        $container->setAllowOverride(true);
-        $container->setService('config', $globalConfig);
-        $container->setService('Configuration', $globalConfig);
-        $container->setService('configuration', $globalConfig);
-        $container->setService('Config', $globalConfig);
-        $container->setAllowOverride($isAllowOverride);
+
+        if ($container instanceof ServiceManager) {
+            $isAllowOverride = $container->getAllowOverride();
+            $container->setAllowOverride(true);
+            $container->setService('config', $globalConfig);
+            $container->setService('Configuration', $globalConfig);
+            $container->setService('configuration', $globalConfig);
+            $container->setService('Config', $globalConfig);
+            $container->setAllowOverride($isAllowOverride);
+        }
 
         $connection = $container->get($connectionName);
         $config = $container->get($configurationName);

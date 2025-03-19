@@ -4,7 +4,7 @@
     "version": "3.0.0",
     "license": "GPL-2.0",
     "require": {
-	    "laminas-mvc": "~6.3",
+	    "laminas-mvc": "~3.8",
 	    "doctrine/doctrine-orm-module": "~6.3"
     },
     "autoload": {

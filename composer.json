@@ -1,10 +1,10 @@
 {
     "name": "rradutzu/zend2-doctrine-dynamic-db",
     "description": "Laminas Doctrine Module that allows defining connections using dynamic database names",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "license": "GPL-2.0",
     "require": {
-	    "laminas-mvc": "~3.8",
+	    "laminas/laminas-mvc": "~3.8",
 	    "doctrine/doctrine-orm-module": "~6.3"
     },
     "autoload": {
